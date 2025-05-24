@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "fastapi-assignment"
+version = "0.1.0"
+description = ""
+authors = ["kyukyu300 <kyujin1252@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+fastapi = "^0.115.12"
+uvicorn = "^0.34.2"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "0.8.2"
+black = "24.10.0"
+mypy = "1.13.0"
+pytest = "8.3.4"
+coverage = "7.6.9"
+pytest-asyncio = "0.25.0"
+
+[tool.black]
+line-length = 120
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+python_version = 3.13
+strict = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

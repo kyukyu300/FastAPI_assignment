@@ -1,6 +1,7 @@
 
 from fastapi import FastAPI
 
+from app.configs.database import initialize_tortoise
 from app.models.movies import MovieModel
 from app.models.users import UserModel
 from app.routers.movies import movie_router
@@ -13,6 +14,8 @@ MovieModel.create_dummy()
 
 app.include_router(user_router)
 app.include_router(movie_router)
+
+initialize_tortoise(app=app)
 
 if __name__ == '__main__':
     import uvicorn

@@ -26,3 +26,7 @@ class UserSearchParams(BaseModel):
     username: Optional[str] = None
     age: Optional[conint(gt=0)] = None
     gender: Optional[GenderEnum] = None
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str

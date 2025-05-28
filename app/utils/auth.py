@@ -4,11 +4,15 @@ from typing import Annotated
 import jwt
 from fastapi.params import Depends
 from fastapi import HTTPException, status
-from jwt.exceptions import InvalidTokenError
+from jwt import InvalidTokenError
+from passlib.context import CryptContext
 
 from app.configs import Config
-from app.models.users import pwd_context, UserModel
+from app.models.users import User
 from app.utils.jwt import oauth2_scheme
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
@@ -25,7 +29,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     except InvalidTokenError:
         credentials_exception.detail = "Invalid Token"
         raise credentials_exception
-    user = UserModel.get(id=user_id)
+    user = User.get(id=user_id)
     if user is None:
         credentials_exception.detail = "User Not Found"
         raise credentials_exception
@@ -41,7 +45,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 @classmethod
-def authenticate(cls, username: str, password: str) -> UserModel | None:
+def authenticate(cls, username: str, password: str) -> User | None:
     for user in cls._data:
         if user.username == username and cls.verify_password(password, user.password):
             return user

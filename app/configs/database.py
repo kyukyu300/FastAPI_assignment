@@ -5,6 +5,8 @@ from tortoise.contrib.fastapi import register_tortoise
 
 from app.configs import Config
 
+config = Config()
+
 TORTOISE_APP_MODELS = [
     "app.models.users",
     "app.models.movies",
@@ -16,13 +18,13 @@ TORTOISE_ORM = {
         "default": {
             "engine": "tortoise.backends.mysql",
             "credentials": {
-                "host": Config.MYSQL_HOST,
-                "port": Config.MYSQL_PORT,
-                "user": Config.MYSQL_USER,
-                "password": Config.MYSQL_PASSWORD,
-                "database": Config.MYSQL_DB,
-                "connect_timeout": Config.MYSQL_CONNECT_TIMEOUT,
-                "maxsize": Config.CONNECTION_POOL_MAXSIZE,
+                "host": config.MYSQL_HOST,
+                "port": config.MYSQL_PORT,
+                "user": config.MYSQL_USER,
+                "password": config.MYSQL_PASSWORD,
+                "database": config.MYSQL_DB,
+                "connect_timeout": config.MYSQL_CONNECT_TIMEOUT,
+                "maxsize": config.CONNECTION_POOL_MAXSIZE,
             },
         },
     },

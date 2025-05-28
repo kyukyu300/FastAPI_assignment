@@ -34,6 +34,7 @@ class UserResponse(BaseModel):
     username: str
     age: int
     gender: GenderEnum
+    profile_image_url: str | None = None
 
 class Token(BaseModel):
     access_token: str

@@ -21,6 +21,7 @@ class MovieResponse(BaseModel):
 	plot: str
 	cast: dict[str, Any]
 	genre: GenreEnum
+	poster_image_url: str | None = None
 
 
 class MovieSearchParams(BaseModel):

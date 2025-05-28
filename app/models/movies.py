@@ -22,6 +22,7 @@ class Movie(BaseModel, Model):
     plot = fields.TextField()
     cast = fields.JSONField()
     playtime = fields.IntField()
+    profile_image_url = fields.CharField(max_length=255, null=True)
     genre = fields.CharEnumField(GenreEnum)
 
     class Meta:

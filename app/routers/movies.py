@@ -1,11 +1,11 @@
 
 from typing import Annotated
 
-from fastapi import Query, Path, HTTPException, APIRouter
+from fastapi import Query, Path, HTTPException, APIRouter, UploadFile
 
 from app.models.movies import Movie
 from app.schemas.movies import MovieResponse, CreateMovieRequest, MovieSearchParams, MovieUpdateRequest
-
+from app.utils.file import validate_image_extension, upload_file, delete_file
 
 movie_router = APIRouter(prefix="/movies", tags=["movies"])
 
@@ -48,3 +48,25 @@ async def delete_movie(movie_id: int = Path(gt=0)):
 		raise HTTPException(status_code=404)
 	await movie.delete()
 	return
+
+
+@movie_router.post("/{movie_id}/poster_image", response_model=MovieResponse, status_code=201)
+async def register_poster_image(image: UploadFile, movie_id: int = Path(gt=0)):
+	validate_image_extension(image)
+
+	movie = await Movie.get_or_none(id=movie_id)
+	if not movie:
+		raise HTTPException(status_code=404, detail="Movie not found")
+
+	prev_image_url = movie.poster_image_url
+	try:
+		image_url = await upload_file(image, "movies/poster_images")
+		movie.poster_image_url = image_url
+		await movie.save()
+
+		if prev_image_url is not None:
+			delete_file(prev_image_url)
+
+		return movie
+	except Exception as e:
+		raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")

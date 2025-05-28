@@ -4,7 +4,6 @@ from datetime import datetime, timezone, timedelta
 
 import jwt
 from fastapi.security import OAuth2PasswordBearer
-from jwt.exceptions import InvalidTokenError
 
 from app.configs import Config
 

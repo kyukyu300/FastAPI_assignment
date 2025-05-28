@@ -5,10 +5,13 @@ import jwt
 from fastapi.params import Depends
 from fastapi import HTTPException, status
 from jwt.exceptions import InvalidTokenError
+from passlib.context import CryptContext
 
-from app.configs import Config
-from app.models.users import pwd_context, UserModel
+from app.configs import config
+from app.models.users import User
 from app.utils.jwt import oauth2_scheme
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
@@ -18,31 +21,32 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, Config.SECRET_KEY, algorithms=[Config.ALGORITHM])
+        payload = jwt.decode(token, config.SECRET_KEY, algorithms=[config.JWT_ALGORITHM])
         user_id = payload.get("user_id")
         if user_id is None:
             raise credentials_exception
     except InvalidTokenError:
-        credentials_exception.detail = "Invalid Token"
+        credentials_exception.detail = "Invalid token."
         raise credentials_exception
-    user = UserModel.get(id=user_id)
+    user = await User.get_or_none(id=user_id)
     if user is None:
-        credentials_exception.detail = "User Not Found"
+        credentials_exception.detail = "User not found."
         raise credentials_exception
     return user
 
 
-@staticmethod
-def get_hashed_password(password: str) -> str:
+def hash_password(password):
     return pwd_context.hash(password)
 
-@staticmethod
-def verify_password(plain_password: str, hashed_password: str) -> bool:
+
+def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-@classmethod
-def authenticate(cls, username: str, password: str) -> UserModel | None:
-    for user in cls._data:
-        if user.username == username and cls.verify_password(password, user.password):
-            return user
-    return None
+
+async def authenticate(username, password):
+    user = await User.get_or_none(username=username)
+    if user is None:
+        raise HTTPException(status_code=401, detail=f"username: {username} - not found.")
+    if not verify_password(password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="password incorrect.")
+    return user

@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from tortoise import Tortoise
 from tortoise.contrib.fastapi import register_tortoise
 
-from app.configs import Config
+from app.configs import config
 
 TORTOISE_APP_MODELS = [
     "app.models.users",
@@ -16,13 +16,13 @@ TORTOISE_ORM = {
         "default": {
             "engine": "tortoise.backends.mysql",
             "credentials": {
-                "host": Config.MYSQL_HOST,
-                "port": Config.MYSQL_PORT,
-                "user": Config.MYSQL_USER,
-                "password": Config.MYSQL_PASSWORD,
-                "database": Config.MYSQL_DB,
-                "connect_timeout": Config.MYSQL_CONNECT_TIMEOUT,
-                "maxsize": Config.CONNECTION_POOL_MAXSIZE,
+                "host": config.MYSQL_HOST,
+                "port": config.MYSQL_PORT,
+                "user": config.MYSQL_USER,
+                "password": config.MYSQL_PASSWORD,
+                "database": config.MYSQL_DB,
+                "connect_timeout": config.MYSQL_CONNECT_TIMEOUT,
+                "maxsize": config.CONNECTION_POOL_MAXSIZE,
             },
         },
     },
